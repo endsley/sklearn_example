@@ -1,6 +1,7 @@
 #!/usr/bin/env python	
 
 import numpy as np	
+from sklearn.model_selection import KFold
 import os
 	
 def gen_10_fold_data(data_name, data_path='./data/'):
@@ -11,28 +12,23 @@ def gen_10_fold_data(data_name, data_path='./data/'):
 	Y = np.loadtxt(xpath + '_label.csv', delimiter=',', dtype=np.int32)			
 
 	fold_path = xpath + '/'
-	if not os.path.exists(path): os.mkdir(path)
+	if not os.path.exists(fold_path): os.mkdir(fold_path)
 
-	count = 1
 	kf = KFold(n_splits=10, shuffle=True)
 	kf.get_n_splits(X)
-	kf.split(X)
-	import pdb; pdb.set_trace()
+	loopObj = enumerate(kf.split(X))
 
-	for train_index, test_index in kf.split(X):
-		#print(train_index)
-		#print(test_index, '\n')
+	for count, data in loopObj:
+		[train_index, test_index] = data
+
 		X_train, X_test = X[train_index], X[test_index]
 		Y_train, Y_test = Y[train_index], Y[test_index]
 		
-
-		np.savetxt( fold_path + db['data_name'] + '_' + str(count) + '.csv', X_train, delimiter=',', fmt='%.6f') 
-		np.savetxt( fold_path + db['data_name'] + '_' + str(count) + '_label.csv', Y_train, delimiter=',', fmt='%d') 
-		np.savetxt( fold_path + db['data_name'] + '_' + str(count) + '_validation.csv', X_test, delimiter=',', fmt='%.6f') 
-		np.savetxt( fold_path + db['data_name'] + '_' + str(count) + '_label_validation.csv', Y_test, delimiter=',', fmt='%d') 
-
-		count += 1
+		np.savetxt( fold_path + data_name + '_' + str(count+1) + '.csv', X_train, delimiter=',', fmt='%.6f') 
+		np.savetxt( fold_path + data_name + '_' + str(count+1) + '_label.csv', Y_train, delimiter=',', fmt='%d') 
+		np.savetxt( fold_path + data_name + '_' + str(count+1) + '_test.csv', X_test, delimiter=',', fmt='%.6f') 
+		np.savetxt( fold_path + data_name + '_' + str(count+1) + '_label_test.csv', Y_test, delimiter=',', fmt='%d') 
 
 
 if __name__ == "__main__":
-	gen_10_fold_data(data_name, data_path='./data/'):
+	gen_10_fold_data('cancer', data_path='./data/')
