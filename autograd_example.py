@@ -1,18 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
+#	Numpy approach to solve f(x,y) = (x-3)^2 + (y-1)^2
 
-import autograd.numpy as np 				# Thinly wrapped numpy
-from autograd import grad 					# Basically everything you need
+import numpy as np
+from scipy.optimize import minimize
 
+def cost_fun(x, arg1, arg2):
+	return arg1*pow((x[0] - 3), 2) + arg2*pow((x[1] - 1), 2) 
 
-
-# Define a function like normal with Python and Numpy
-def tanh(x):
-	y = np.exp(-x)
-	return (1.0 - y) / (1.0 + y)
-
-
-# Create a function to compute the gradient
-grad_tanh = grad(tanh)
-# Evaluate the gradient at x = 1.0
-print(grad_tanh(1.0))
+x0 = np.array([0,0])
+res = minimize(cost_fun, x0, method='nelder-mead', args=(3,4), options={'xtol': 1e-8, 'disp': True})
+print res
