@@ -9,6 +9,9 @@ from sklearn import preprocessing
 
 class class_data_stats():
 	def __init__(self, X, Y):	
+		self.X = X
+		self.Y = Y
+
 		self.l = np.unique(Y)
 		self.c = len(self.l)
 		self.X_list = {}
@@ -27,8 +30,8 @@ class class_data_stats():
 	def get_class_info(self):
 		D = np.zeros((self.c, self.c))
 		for e, i in enumerate(self.l):
-			indices = np.where(Y == i)[0]
-			self.X_list[i]['shape'] = X[indices, :].shape
+			indices = np.where(self.Y == i)[0]
+			self.X_list[i]['shape'] = self.X[indices, :].shape
 			self.X_list[i]['pairwise_distance'] = sklearn.metrics.pairwise.pairwise_distances(self.X_list[i]['X'])
 			self.X_list[i]['pairwise_distance_std'] = np.std(self.X_list[i]['pairwise_distance'])
 			self.X_list[i]['pairwise_distance_max'] = np.max(self.X_list[i]['pairwise_distance'])
