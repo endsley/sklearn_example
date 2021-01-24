@@ -36,6 +36,7 @@ class class_data_stats():
 			self.X_list[i]['pairwise_distance_std'] = np.std(self.X_list[i]['pairwise_distance'])
 			self.X_list[i]['pairwise_distance_max'] = np.max(self.X_list[i]['pairwise_distance'])
 
+
 			print('Class %d'%i)
 			print('\t data size : ', self.X_list[i]['shape'])
 			print('\t distance std : %.3f'% self.X_list[i]['pairwise_distance_std'])
@@ -51,7 +52,7 @@ class class_data_stats():
 					pd = sklearn.metrics.pairwise.pairwise_distances(self.X_list[i]['X'], self.X_list[j]['X'])
 					pd_min = np.min(pd)
 					D[a,b] = pd_min
-		print('Class max/min pairwise distance')
+		print('Within same class gives furthest distance, between class gives smallest pairwise distance')
 		print('\t' + str(D).replace('\n', '\n\t'))
 
 
@@ -75,10 +76,10 @@ if __name__ == "__main__":
 	np.set_printoptions(suppress=True)
 
 
-	data_name = 'cancer'
+	data_name = 'cfar'
 	
-	X = np.loadtxt('data/' + data_name + '.csv', delimiter=',', dtype=np.float64)			
-	Y = np.loadtxt('data/' + data_name + '_label.csv', delimiter=',', dtype=np.int32)			
+	X = np.loadtxt(data_name + '.csv', delimiter=',', dtype=np.float64)			
+	Y = np.loadtxt(data_name + '_label.csv', delimiter=',', dtype=np.int32)			
 	X = preprocessing.scale(X)
 
 	CS = class_data_stats(X,Y)

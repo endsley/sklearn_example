@@ -17,7 +17,8 @@ def rearrange_sample_to_same_class(X,Y):
 	return [newX, newY]
 
 if __name__ == "__main__":
-	data_name = 'cancer'
+	#data_name = 'cancer'
+	data_name = 'car'
 	
 	X = np.loadtxt('data/' + data_name + '.csv', delimiter=',', dtype=np.float64)			
 	Y = np.loadtxt('data/' + data_name + '_label.csv', delimiter=',', dtype=np.int32)			
