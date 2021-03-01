@@ -32,6 +32,7 @@ class class_data_stats():
 		for e, i in enumerate(self.l):
 			indices = np.where(self.Y == i)[0]
 			self.X_list[i]['shape'] = self.X[indices, :].shape
+			self.X_list[i]['μ'] = np.mean(self.X[indices, :], axis=0)
 			self.X_list[i]['pairwise_distance'] = sklearn.metrics.pairwise.pairwise_distances(self.X_list[i]['X'])
 			self.X_list[i]['pairwise_distance_std'] = np.std(self.X_list[i]['pairwise_distance'])
 			self.X_list[i]['pairwise_distance_max'] = np.max(self.X_list[i]['pairwise_distance'])
@@ -39,6 +40,7 @@ class class_data_stats():
 
 			print('Class %d'%i)
 			print('\t data size : ', self.X_list[i]['shape'])
+			print('\t Distribution Mean : %s'% str(self.X_list[i]['μ']))
 			print('\t distance std : %.3f'% self.X_list[i]['pairwise_distance_std'])
 			print('\t distance max : %.3f'% self.X_list[i]['pairwise_distance_max'])
 			D[e,e] = self.X_list[i]['pairwise_distance_max']
@@ -76,14 +78,26 @@ if __name__ == "__main__":
 	np.set_printoptions(suppress=True)
 
 
-	data_name = 'cfar'
-	
+	# Use cancer data
+	data_name = 'cancer'
 	X = np.loadtxt(data_name + '.csv', delimiter=',', dtype=np.float64)			
 	Y = np.loadtxt(data_name + '_label.csv', delimiter=',', dtype=np.int32)			
 	X = preprocessing.scale(X)
 
+	# Use 2 Gaussian data	#--------------------------
+	#x1 = np.random.randn(40,2)
+	#y1 = np.ones((1,40))
+	#x2 = np.random.randn(40,2) + 10
+	#y2 = np.zeros((1,40))
+	#
+	#X = np.vstack((x1,x2))
+	#Y = np.hstack((y1,y2)).T
+
+
+
+
 	CS = class_data_stats(X,Y)
 	CS.get_class_info()
 
-	np.savetxt(data_name + '.csv', X, delimiter=',', fmt='%.4f') 
-	np.savetxt(data_name + '_label.csv', Y, delimiter=',', fmt='%d') 
+#	np.savetxt(data_name + '.csv', X, delimiter=',', fmt='%.4f') 
+#	np.savetxt(data_name + '_label.csv', Y, delimiter=',', fmt='%d') 
