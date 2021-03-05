@@ -4,11 +4,15 @@ import numpy as np
 import sys
 import sklearn.metrics
 from sklearn import preprocessing
+import matplotlib.pyplot as plt
+from path_tools import *
+import pandas as pd
+import seaborn as sn
 
 
 
-class class_data_stats():
-	def __init__(self, X, Y):	
+class data_stats():
+	def __init__(self, X, Y):
 		self.X = X
 		self.Y = Y
 
@@ -24,6 +28,43 @@ class class_data_stats():
 
 			self.X_list[i]['X'] = X[indices, :]
 			self.Y_list[i]['Y'] = Y[indices]
+
+	def get_Correlation_Matrix(self, path):
+		ensure_path_exists(path)
+
+		withY = np.hstack(self.X, self.Y)
+		df = pd.DataFrame(withY)
+		corrMatrix = df.corr()
+		ax = sn.heatmap(corrMatrix, annot=True)
+		ax.set_title('Linear Correlation Matrix')
+		plt.savefig(path + 'Linear_Correlation_Matrix.png')
+		plt.clf()
+
+		#import pdb; pdb.set_trace()	
+		#plt.show()
+
+	def get_feature_histograms(self, path):
+		ensure_path_exists(path)
+		X = self.X
+		d = X.shape[1]
+
+		for α in range(d):
+			x = X[:,α]
+			H = plt.hist(x, bins=20)
+			plt.ylabel('Probability')
+			plt.xlabel('value')
+			plt.title('Feature ' + str(α) + ' Histogram')
+			plt.savefig(path + 'Feature_' + str(α) + '.png')
+			plt.clf()
+
+		for α in range(d):
+			x = X[:,α]
+			H = plt.hist(x, bins=20, alpha = 0.5, rwidth=0.1)
+			plt.ylabel('Probability')
+			plt.xlabel('value')
+			plt.title('All Features Superimposed Histogram')
+
+		plt.savefig(path + 'All_Features.png')
 
 
 
@@ -97,7 +138,9 @@ if __name__ == "__main__":
 
 
 	CS = class_data_stats(X,Y)
-	CS.get_class_info()
+	CS.get_Correlation_Matrix('./Dependence_matrices/')
+	#CS.get_feature_histograms('./feature_histogram/')
+	#CS.get_class_info()
 
 #	np.savetxt(data_name + '.csv', X, delimiter=',', fmt='%.4f') 
 #	np.savetxt(data_name + '_label.csv', Y, delimiter=',', fmt='%d') 
