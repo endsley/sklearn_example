@@ -9,6 +9,7 @@ from path_tools import *
 import pandas as pd
 import seaborn as sn
 from hsic import *
+from scipy.stats import pearsonr
 
 
 
@@ -29,6 +30,40 @@ class data_stats():
 
 			self.X_list[i]['X'] = X[indices, :]
 			self.Y_list[i]['Y'] = Y[indices]
+
+	def Between_Feature_Scatter_plot(self, path):
+		ensure_path_exists(path)
+		plt.clf()
+
+		d = X.shape[1]
+		depMatrix = np.zeros((d,d))
+		for α in range(d):
+			for β in range(d):
+				flip_path = path + str(β) + '_' + str(α) + '_scatter.png'
+				if file_exists(flip_path): continue
+
+				plt.plot(X[:,α], X[:,β], '.')
+				plt.title('Scatter Plot between Features ' + str(α) + ' and ' + str(β))
+
+				# add text
+				mX = np.min(X[:,α])
+				mY = np.max(X[:,β])
+
+				xLoc = mX
+				yLoc = mY
+	
+				Hs = ℍ(X[:,α],X[:,β])	
+				ρ, v = pearsonr(X[:,α], X[:,β])
+				textstr = 'Correlation ρ: %.3f\n'%ρ
+				textstr += 'HSIC: %.3f'%Hs
+
+				props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+				plt.text(xLoc, yLoc, textstr, fontsize=14, verticalalignment='top', bbox=props)
+
+
+				plt.savefig(path + str(α) + '_' + str(β) + '_scatter.png')
+				plt.clf()
+
 
 	def get_Correlation_Matrix(self, path):
 		ensure_path_exists(path)
@@ -152,7 +187,8 @@ if __name__ == "__main__":
 
 	CS = data_stats(X,Y)
 	#CS.get_Correlation_Matrix('./Dependence_matrices/')
-	CS.get_HSIC_Dependence_Matrix('./Dependence_matrices/')
+	CS.Between_Feature_Scatter_plot('./Feature_Scatter_Plots/')
+	#CS.get_HSIC_Dependence_Matrix('./Dependence_matrices/')
 	#CS.get_feature_histograms('./feature_histogram/')
 	#CS.get_class_info()
 
