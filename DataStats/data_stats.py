@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from path_tools import *
 import pandas as pd
 import seaborn as sn
+from hsic import *
 
 
 
@@ -32,7 +33,7 @@ class data_stats():
 	def get_Correlation_Matrix(self, path):
 		ensure_path_exists(path)
 
-		withY = np.hstack(self.X, self.Y)
+		withY = np.hstack((self.X, np.atleast_2d(self.Y).T))
 		df = pd.DataFrame(withY)
 		corrMatrix = df.corr()
 		ax = sn.heatmap(corrMatrix, annot=True)
@@ -40,8 +41,20 @@ class data_stats():
 		plt.savefig(path + 'Linear_Correlation_Matrix.png')
 		plt.clf()
 
-		#import pdb; pdb.set_trace()	
-		#plt.show()
+	def get_HSIC_Dependence_Matrix(self, path):
+		ensure_path_exists(path)
+
+		withY = np.hstack((self.X, np.atleast_2d(self.Y).T))
+		d = withY.shape[1]
+		depMatrix = np.zeros((d,d))
+		for α in range(d):
+			for β in range(d):
+				depMatrix[α,β] = ℍ(withY[:,α],withY[:,β])
+
+		ax = sn.heatmap(depMatrix, annot=True)
+		ax.set_title('HSIC Dependence Matrix')
+		plt.savefig(path + 'HSIC_Dependence_Matrix.png')
+		plt.clf()
 
 	def get_feature_histograms(self, path):
 		ensure_path_exists(path)
@@ -121,8 +134,8 @@ if __name__ == "__main__":
 
 	# Use cancer data
 	data_name = 'cancer'
-	X = np.loadtxt(data_name + '.csv', delimiter=',', dtype=np.float64)			
-	Y = np.loadtxt(data_name + '_label.csv', delimiter=',', dtype=np.int32)			
+	X = np.loadtxt('../data/' + data_name + '.csv', delimiter=',', dtype=np.float64)			
+	Y = np.loadtxt('../data/' + data_name + '_label.csv', delimiter=',', dtype=np.int32)			
 	X = preprocessing.scale(X)
 
 	# Use 2 Gaussian data	#--------------------------
@@ -137,8 +150,9 @@ if __name__ == "__main__":
 
 
 
-	CS = class_data_stats(X,Y)
-	CS.get_Correlation_Matrix('./Dependence_matrices/')
+	CS = data_stats(X,Y)
+	#CS.get_Correlation_Matrix('./Dependence_matrices/')
+	CS.get_HSIC_Dependence_Matrix('./Dependence_matrices/')
 	#CS.get_feature_histograms('./feature_histogram/')
 	#CS.get_class_info()
 
