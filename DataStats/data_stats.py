@@ -34,16 +34,17 @@ class data_stats():
 	def Between_Feature_Scatter_plot(self, path):
 		ensure_path_exists(path)
 		plt.clf()
+		X = self.X
 
 		d = X.shape[1]
 		depMatrix = np.zeros((d,d))
 		for α in range(d):
 			for β in range(d):
-				flip_path = path + str(β) + '_' + str(α) + '_scatter.png'
+				flip_path = path + str(β+1) + '_' + str(α+1) + '_scatter.png'
 				if file_exists(flip_path): continue
 
 				plt.plot(X[:,α], X[:,β], '.')
-				plt.title('Scatter Plot between Features ' + str(α) + ' and ' + str(β))
+				plt.title('Scatter Plot between Features ' + str(α+1) + ' and ' + str(β+1))
 
 				# add text
 				mX = np.min(X[:,α])
@@ -61,7 +62,7 @@ class data_stats():
 				plt.text(xLoc, yLoc, textstr, fontsize=14, verticalalignment='top', bbox=props)
 
 
-				plt.savefig(path + str(α) + '_' + str(β) + '_scatter.png')
+				plt.savefig(path + str(α+1) + '_' + str(β+1) + '_scatter.png')
 				plt.clf()
 
 
@@ -71,7 +72,12 @@ class data_stats():
 		withY = np.hstack((self.X, np.atleast_2d(self.Y).T))
 		df = pd.DataFrame(withY)
 		corrMatrix = df.corr()
-		ax = sn.heatmap(corrMatrix, annot=True)
+
+		m_size = corrMatrix.shape[0]
+		yticklabels = np.arange(1, m_size+1)
+		xticklabels = np.arange(1, m_size+1)
+		ax = sn.heatmap(corrMatrix, annot=True, yticklabels=yticklabels, xticklabels=xticklabels)
+
 		ax.set_title('Linear Correlation Matrix')
 		plt.savefig(path + 'Linear_Correlation_Matrix.png')
 		plt.clf()
@@ -186,7 +192,7 @@ if __name__ == "__main__":
 
 
 	CS = data_stats(X,Y)
-	#CS.get_Correlation_Matrix('./Dependence_matrices/')
+	CS.get_Correlation_Matrix('./Dependence_matrices/')
 	CS.Between_Feature_Scatter_plot('./Feature_Scatter_Plots/')
 	#CS.get_HSIC_Dependence_Matrix('./Dependence_matrices/')
 	#CS.get_feature_histograms('./feature_histogram/')
